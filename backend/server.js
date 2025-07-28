@@ -6,6 +6,7 @@ import userRoutes from './routes/userRoutes.js'
 import postRoutes from './routes/postRoutes.js' 
 import { v2 as cloudinary } from "cloudinary";
 import path from'path'
+import job from "./utils/cron.js";
  
 
 dotnev.config() 
@@ -14,6 +15,9 @@ connectDB()
 
 const app = express()
 const __dirname = path.resolve();
+
+job.start()
+
 
 cloudinary.config({
 	cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -31,6 +35,10 @@ app.use(cookieParser())
 
 app.use('/api/users',userRoutes)
 app.use('/api/posts',postRoutes)
+
+app.get('/ping', (req, res) => {
+    res.status(200).send('pong 🏓');
+  });
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend/dist")));
